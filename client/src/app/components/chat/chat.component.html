@@ -1,0 +1,69 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <h2>Chat Room</h2>
+    <div class="user-info" *ngIf="currentUser">
+      <span class="username">{{ currentUser.username }}</span>
+      <button (click)="logout()" class="logout-button">Logout</button>
+    </div>
+  </div>
+
+  <div class="room-selection" *ngIf="!currentRoom">
+    <h3>Select a Room</h3>
+    <div class="room-options">
+      <button 
+        *ngFor="let room of availableRooms" 
+        (click)="joinRoom(room)"
+        class="room-button"
+      >
+        {{ room }}
+      </button>
+    </div>
+    <!-- <div class="create-room">
+      <input 
+        type="text" 
+        [(ngModel)]="newRoomName" 
+        placeholder="Create new room"
+        class="room-input"
+      >
+      <button 
+        (click)="createAndJoinRoom()" 
+        [disabled]="!newRoomName.trim()"
+        class="create-button"
+      >
+        Create Room
+      </button>
+    </div> -->
+  </div>
+
+  <div class="chat-content" *ngIf="currentRoom">
+    <div class="room-info">
+      <h3>Room: {{ currentRoom }}</h3>
+      <button (click)="leaveRoom()" class="leave-button">Leave Room</button>
+    </div>
+
+    <div class="messages-container" #messagesContainer>
+      <div *ngFor="let message of messages" class="message">
+        <div class="message-content" [class.own-message]="message.user.username === currentUser?.username">
+          <div class="message-header">
+            <span class="username">{{ message.user.username }}</span>
+            <small>{{ message.timestamp | date:'short' }}</small>
+          </div>
+          <p>{{ message.content }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="input-container">
+      <input 
+        type="text" 
+        [(ngModel)]="newMessage" 
+        (keyup.enter)="sendMessage()"
+        placeholder="Type a message..."
+        class="message-input"
+      >
+      <button (click)="sendMessage()" class="send-button">
+        Send
+      </button>
+    </div>
+  </div>
+</div>
