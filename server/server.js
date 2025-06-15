@@ -81,12 +81,14 @@ const authenticateToken = (req, res, next) => {
 // REST API endpoints with enhanced error handling
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const param = JSON.parse(req.body?.['param']);
+    console.log('register', param);
+    const { username, email, password } = param;
     
     // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ success: false, error: 'User already exists' });
     }
     
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -98,10 +100,10 @@ app.post('/api/register', async (req, res) => {
     
     const savedUser = await user.save();
     console.log('New user registered:', savedUser.username);
-    res.status(201).json({ message: 'User created successfully', userId: savedUser._id });
+    res.status(201).json({ success: true, message: 'User created successfully', userId: savedUser._id });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ success:false, error: error.message });
   }
 });
 
@@ -115,12 +117,12 @@ app.post('/api/login', async (req, res) => {
     const user = await User.findOne({ email });
     
     if (!user) {
-      return res.status(400).json({ error: 'User not found' });
+      return res.status(400).json({ success: true, error: 'User not found' });
     }
     
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      return res.status(400).json({ error: 'Invalid password' });
+      return res.status(400).json({ success:false, error: 'Invalid password' });
     }
     
     // Update last seen
@@ -139,7 +141,7 @@ app.post('/api/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ success: true, error: error.message });
   }
 });
 

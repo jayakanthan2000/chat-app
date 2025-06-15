@@ -14,6 +14,7 @@ export class LoginComponent {
   username: string = '';
   email: string = '';
   password: string = '';
+  formType: string = 'login';
 
   constructor(
     private userService: UserService,
@@ -38,5 +39,32 @@ export class LoginComponent {
       console.log(encResult);
     }
 
+  }
+
+  OnClickRegister(){
+    this.formType = 'register';
+  }
+
+  OnClickBack(){
+    this.formType = 'login';
+  }
+
+  async register(){
+    let param = {
+      username: this.username.trim(), email: this.email.trim(), password: this.password.trim()
+    }
+    let encResult = await this.userService.noAuthPostRequest('/api/register', param);
+    // // Store the token
+    // localStorage.setItem('token', encResult.token);
+
+    // // Update the current user
+    // this.userService.currentUserSubject.next(encResult.user);
+    if (encResult.success) {
+      console.log(encResult);
+      this.formType = 'login';
+    }
+    else {
+      console.log(encResult);
+    }
   }
 } 
